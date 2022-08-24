@@ -6,10 +6,11 @@ import android.os.Bundle
 import android.widget.Toast
 import com.google.android.gms.maps.*
 import com.google.android.gms.maps.model.LatLng
+import com.google.android.gms.maps.model.Marker
 import com.google.android.gms.maps.model.MarkerOptions
 import com.google.android.gms.maps.model.PolylineOptions
 
-class MainActivity : AppCompatActivity(), OnMapReadyCallback,GoogleMap.OnMapClickListener {
+class MainActivity : AppCompatActivity(), OnMapReadyCallback,GoogleMap.OnMapClickListener , GoogleMap.OnMarkerClickListener {
     lateinit var mMap:GoogleMap
     var puntos:ArrayList<LatLng> = ArrayList<LatLng>()
 
@@ -36,18 +37,10 @@ class MainActivity : AppCompatActivity(), OnMapReadyCallback,GoogleMap.OnMapClic
         mMap.moveCamera(camUpd1);
 
         mMap.setOnMapClickListener(this)
+        mMap.setOnMarkerClickListener (this)
     }
 
     override fun onMapClick(point: LatLng) {
-        //val proj:Projection = mMap.getProjection();
-       // val coord:Point = proj.toScreenLocation(point);
-       // Toast.makeText(
-       // this.applicationContext,
-       // "Click\n" +
-       // "Lat: " + point.latitude + "\n" +
-      //  "Lng: " + point.longitude + "\n" +
-      //  "X: " + coord.x + " - Y: " + coord.y,
-     //   Toast.LENGTH_SHORT).show();
 
 
         puntos.add(point)
@@ -56,7 +49,7 @@ class MainActivity : AppCompatActivity(), OnMapReadyCallback,GoogleMap.OnMapClic
                 .title("lugar"+puntos.size)
         )
 
-        mMap.setOnMarkerClickListener()
+
         if(puntos.size==4){
         var lineas: PolylineOptions= PolylineOptions()
 
@@ -71,5 +64,26 @@ class MainActivity : AppCompatActivity(), OnMapReadyCallback,GoogleMap.OnMapClic
 
         }
 
+    }
+// borrar marcador
+    override fun onMarkerClick(p0: Marker): Boolean {
+      p0.remove()
+    var contador=0
+
+    //
+    var position= LatLng(p0.position.latitude,p0.position.longitude)
+    if(puntos.size>0){
+        while(contador<puntos.size)
+        {
+            var position2=LatLng(puntos[contador].latitude,puntos[contador].longitude)
+            if(position2==position)
+            {
+                puntos.removeAt(contador)
+
+            }
+            contador++
+        }
+    }
+        return false
     }
 }
